@@ -10,6 +10,7 @@ public record MeetingNoteResponse(
         String rawNotes,
         LocalDate meetingDate,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        AIAnalysisResponse aiAnalysis
 ) {
 }

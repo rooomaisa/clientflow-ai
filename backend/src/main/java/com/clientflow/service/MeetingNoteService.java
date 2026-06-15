@@ -6,6 +6,7 @@ import com.clientflow.entity.Client;
 import com.clientflow.entity.MeetingNote;
 import com.clientflow.entity.User;
 import com.clientflow.exception.ApiException;
+import com.clientflow.repository.AIAnalysisRepository;
 import com.clientflow.repository.ClientRepository;
 import com.clientflow.repository.MeetingNoteRepository;
 import org.springframework.stereotype.Service;
@@ -17,16 +18,22 @@ public class MeetingNoteService {
 
     private final MeetingNoteRepository meetingNoteRepository;
     private final ClientRepository clientRepository;
+    private final AIAnalysisRepository aiAnalysisRepository;
     private final CurrentUserService currentUserService;
+    private final AIProcessingService aiProcessingService;
 
     public MeetingNoteService(
             MeetingNoteRepository meetingNoteRepository,
             ClientRepository clientRepository,
-            CurrentUserService currentUserService
+            AIAnalysisRepository aiAnalysisRepository,
+            CurrentUserService currentUserService,
+            AIProcessingService aiProcessingService
     ) {
         this.meetingNoteRepository = meetingNoteRepository;
         this.clientRepository = clientRepository;
+        this.aiAnalysisRepository = aiAnalysisRepository;
         this.currentUserService = currentUserService;
+        this.aiProcessingService = aiProcessingService;
     }
 
     public List<MeetingNoteResponse> getAllForClient(Long clientId) {
@@ -66,6 +73,7 @@ public class MeetingNoteService {
 
     public void delete(Long id) {
         MeetingNote meetingNote = findOwnedMeeting(id);
+        aiAnalysisRepository.deleteByMeetingNoteId(meetingNote.getId());
         meetingNoteRepository.delete(meetingNote);
     }
 
@@ -89,7 +97,8 @@ public class MeetingNoteService {
                 meetingNote.getRawNotes(),
                 meetingNote.getMeetingDate(),
                 meetingNote.getCreatedAt(),
-                meetingNote.getUpdatedAt()
+                meetingNote.getUpdatedAt(),
+                aiProcessingService.getAnalysisForMeeting(meetingNote.getId())
         );
     }
 }
