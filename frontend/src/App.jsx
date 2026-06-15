@@ -1,6 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import DashboardLayout from './components/layout/DashboardLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import ClientDetailPage from './pages/ClientDetailPage'
+import ClientsPage from './pages/ClientsPage'
 import DashboardPage from './pages/DashboardPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
@@ -23,7 +25,8 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/clients" element={<PlaceholderPage title="Clients" phase="12" />} />
+          <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/clients/:clientId" element={<ClientDetailPage />} />
           <Route path="/tasks" element={<PlaceholderPage title="Tasks" phase="14" />} />
         </Route>
 

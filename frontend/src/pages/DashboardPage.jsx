@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { fetchDashboardOverview } from '../api/dashboard'
 import Badge from '../components/ui/Badge'
 import StatCard from '../components/ui/StatCard'
 import { useAuth } from '../context/AuthContext'
+import { CLIENT_STATUS_LABELS, clientStatusTone } from '../utils/clientStatus'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -64,11 +66,13 @@ export default function DashboardPage() {
                   key={client.id}
                   className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
                 >
-                  <div>
-                    <p className="font-medium text-slate-900">{client.name}</p>
+                  <Link to={`/clients/${client.id}`} className="min-w-0 flex-1">
+                    <p className="font-medium text-slate-900 hover:text-brand-700">{client.name}</p>
                     <p className="text-sm text-slate-500">{client.companyName || 'No company'}</p>
-                  </div>
-                  <Badge tone="emerald">{client.status}</Badge>
+                  </Link>
+                  <Badge tone={clientStatusTone(client.status)}>
+                    {CLIENT_STATUS_LABELS[client.status] || client.status}
+                  </Badge>
                 </li>
               ))}
             </ul>
