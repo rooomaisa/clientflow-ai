@@ -24,6 +24,7 @@ Thumbs.db
 
 # Vite
 *.local
+frontend/.vite/
 
 # Java
 *.class
