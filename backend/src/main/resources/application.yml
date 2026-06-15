@@ -5,6 +5,9 @@ spring:
   application:
     name: clientflow-api
 
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
