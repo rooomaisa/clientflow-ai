@@ -10,4 +10,6 @@ public interface AIAnalysisRepository extends JpaRepository<AIAnalysis, Long> {
     Optional<AIAnalysis> findByMeetingNoteId(Long meetingNoteId);
 
     void deleteByMeetingNoteId(Long meetingNoteId);
+
+    long countByUserId(Long userId);
 }
