@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+target/
+build/
+
+# Environment & secrets — never commit these
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Vite
+*.local
+
+# Java
+*.class
+*.jar
+*.war
+hs_err_pid*
+
+# Test / coverage
+coverage/
