@@ -63,15 +63,19 @@ public class ClientService {
 
     private void applyRequest(Client client, ClientRequest request) {
         client.setName(request.name());
-        client.setCompanyName(request.companyName());
-        client.setEmail(request.email());
-        client.setPhone(request.phone());
-        client.setNotes(request.notes());
+        client.setCompanyName(blankToNull(request.companyName()));
+        client.setEmail(blankToNull(request.email()));
+        client.setPhone(blankToNull(request.phone()));
+        client.setNotes(blankToNull(request.notes()));
         if (request.status() != null) {
             client.setStatus(request.status());
         } else if (client.getStatus() == null) {
             client.setStatus(ClientStatus.NEW);
         }
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 
     private ClientResponse toResponse(Client client) {
