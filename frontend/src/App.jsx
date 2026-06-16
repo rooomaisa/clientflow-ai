@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ClientDetailPage from './pages/ClientDetailPage'
 import ClientsPage from './pages/ClientsPage'
 import DashboardPage from './pages/DashboardPage'
+import MeetingDetailPage from './pages/MeetingDetailPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import PlaceholderPage from './pages/PlaceholderPage'
@@ -27,6 +28,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/clients/:clientId" element={<ClientDetailPage />} />
+          <Route path="/clients/:clientId/meetings/:meetingId" element={<MeetingDetailPage />} />
           <Route path="/tasks" element={<PlaceholderPage title="Tasks" phase="14" />} />
         </Route>
 

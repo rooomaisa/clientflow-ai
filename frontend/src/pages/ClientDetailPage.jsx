@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deleteClient, fetchClient, updateClient } from '../api/clients'
-import { fetchMeetingsForClient } from '../api/meetings'
+import { createMeeting, fetchMeetingsForClient } from '../api/meetings'
 import ClientForm from '../components/clients/ClientForm'
+import MeetingForm from '../components/meetings/MeetingForm'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
 import { CLIENT_STATUS_LABELS, clientStatusTone } from '../utils/clientStatus'
@@ -21,6 +22,7 @@ export default function ClientDetailPage() {
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showMeetingForm, setShowMeetingForm] = useState(false)
 
   async function loadClient() {
     try {
@@ -46,6 +48,12 @@ export default function ClientDetailPage() {
     const updated = await updateClient(clientId, payload)
     setClient(updated)
     setEditing(false)
+  }
+
+  async function handleCreateMeeting(payload) {
+    const created = await createMeeting(clientId, payload)
+    setShowMeetingForm(false)
+    navigate(`/clients/${clientId}/meetings/${created.id}`)
   }
 
   async function handleDelete() {
@@ -148,15 +156,30 @@ export default function ClientDetailPage() {
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Meeting notes</h2>
-            <p className="mt-1 text-sm text-slate-500">Full meeting management arrives in Phase 13.</p>
+            <p className="mt-1 text-sm text-slate-500">Add notes, then process them with AI to get summaries and tasks.</p>
           </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
-            {meetings.length} total
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
+              {meetings.length} total
+            </span>
+            <Button onClick={() => setShowMeetingForm((open) => !open)}>
+              {showMeetingForm ? 'Close form' : 'Add meeting'}
+            </Button>
+          </div>
         </div>
+
+        {showMeetingForm && (
+          <div className="mt-6 border-t border-slate-100 pt-6">
+            <MeetingForm
+              submitLabel="Create meeting"
+              onCancel={() => setShowMeetingForm(false)}
+              onSubmit={handleCreateMeeting}
+            />
+          </div>
+        )}
 
         {meetings.length === 0 ? (
           <p className="mt-4 text-sm text-slate-500">No meeting notes yet for this client.</p>
@@ -167,12 +190,12 @@ export default function ClientDetailPage() {
                 key={meeting.id}
                 className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
               >
-                <div>
-                  <p className="font-medium text-slate-900">{meeting.title}</p>
+                <Link to={`/clients/${clientId}/meetings/${meeting.id}`} className="min-w-0 flex-1">
+                  <p className="font-medium text-slate-900 hover:text-brand-700">{meeting.title}</p>
                   <p className="text-sm text-slate-500">
                     {meeting.meetingDate ? formatDate(meeting.meetingDate) : 'No date set'}
                   </p>
-                </div>
+                </Link>
                 {meeting.aiAnalysis ? (
                   <Badge tone="emerald">AI processed</Badge>
                 ) : (
