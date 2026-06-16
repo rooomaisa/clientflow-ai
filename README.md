@@ -4,8 +4,6 @@ AI-powered client intake and meeting assistant for freelancers, consultants, and
 
 Turn messy meeting notes into summaries, action items, follow-up tasks, and professional email drafts.
 
-> **Status:** In active development. This README will be expanded as features ship.
-
 ## What it does
 
 ClientFlow AI helps you manage clients, meeting notes, and follow-up tasks. After a client conversation, paste your raw notes, click **Process with AI**, and get structured output you can act on.
@@ -24,30 +22,86 @@ ClientFlow AI helps you manage clients, meeting notes, and follow-up tasks. Afte
 
 ```
 clientflow-ai/
-├── backend/     # Spring Boot REST API
-├── frontend/    # React + Vite app
+├── backend/        # Spring Boot REST API
+├── frontend/       # React + Vite app
+├── render.yaml     # Render deployment config
+├── DEPLOYMENT.md   # Step-by-step deploy guide
 └── README.md
 ```
 
 ## Local setup
 
-_Coming in a later phase — backend and frontend setup instructions will be added here._
+### Prerequisites
+
+- Java 21
+- Node.js 18+
+- Supabase project (PostgreSQL)
+- OpenAI API key
+
+### 1. Backend
+
+```bash
+cd backend
+cp .env.example .env
+# Fill in .env with your Supabase + OpenAI credentials
+./mvnw spring-boot:run
+```
+
+API runs at http://localhost:8080
+
+### 2. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+App runs at http://localhost:5173 (API proxied to backend automatically)
 
 ## Environment variables
 
-_Coming in a later phase._
+### Backend (`backend/.env`)
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Supabase JDBC URL (use Session pooler) |
+| `DATABASE_USERNAME` | `postgres.YOUR_PROJECT_REF` |
+| `DATABASE_PASSWORD` | Supabase database password |
+| `JWT_SECRET` | Random string, min 32 characters |
+| `CORS_ORIGIN` | `http://localhost:5173` (add Vercel URL in prod) |
+| `OPENAI_API_KEY` | From platform.openai.com |
+| `OPENAI_MODEL` | `gpt-4o-mini` (default) |
+
+### Frontend (`frontend/.env` — optional locally)
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_URL` | Only needed in production (Vercel). Local dev uses Vite proxy. |
+
+See `.env.example` files in each folder for templates.
+
+## Deployment
+
+Full step-by-step guide: **[DEPLOYMENT.md](./DEPLOYMENT.md)**
+
+Quick summary:
+1. Deploy backend to **Render** using `render.yaml`
+2. Deploy frontend to **Vercel** (root directory: `frontend`)
+3. Set `VITE_API_URL` on Vercel → your Render URL
+4. Set `CORS_ORIGIN` on Render → your Vercel URL
 
 ## Live demo
 
-_Coming after deployment._
+_Add your Vercel URL here after deploying._
 
 ## Screenshots
 
-_Coming after UI is built._
+_Coming in Phase 16._
 
 ## What I learned
 
-_Coming at project completion._
+_Coming in Phase 16._
 
 ## Future improvements
 
