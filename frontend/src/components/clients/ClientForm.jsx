@@ -46,14 +46,17 @@ export default function ClientForm({ initialValues, onSubmit, onCancel, submitLa
     try {
       await onSubmit({
         name: values.name.trim(),
-        companyName: values.companyName.trim() || null,
-        email: values.email.trim() || null,
-        phone: values.phone.trim() || null,
-        notes: values.notes.trim() || null,
+        companyName: values.companyName.trim(),
+        email: values.email.trim(),
+        phone: values.phone.trim(),
+        notes: values.notes.trim(),
         status: values.status,
       })
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not save client. Please try again.')
+      const validationMessage = err.response?.data?.errors
+        ? Object.values(err.response.data.errors).join(' ')
+        : null
+      setError(validationMessage || err.response?.data?.message || 'Could not save client. Please try again.')
     } finally {
       setSubmitting(false)
     }
