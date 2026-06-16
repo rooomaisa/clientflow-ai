@@ -5,6 +5,7 @@ import Badge from '../components/ui/Badge'
 import StatCard from '../components/ui/StatCard'
 import { useAuth } from '../context/AuthContext'
 import { CLIENT_STATUS_LABELS, clientStatusTone } from '../utils/clientStatus'
+import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS, taskStatusTone } from '../utils/taskStatus'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -90,11 +91,15 @@ export default function DashboardPage() {
                   key={task.id}
                   className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
                 >
-                  <div>
-                    <p className="font-medium text-slate-900">{task.title}</p>
-                    <p className="text-sm text-slate-500">{task.priority} priority</p>
-                  </div>
-                  <Badge tone={task.status === 'DONE' ? 'slate' : 'amber'}>{task.status}</Badge>
+                  <Link to="/tasks" className="min-w-0 flex-1">
+                    <p className="font-medium text-slate-900 hover:text-brand-700">{task.title}</p>
+                    <p className="text-sm text-slate-500">
+                      {TASK_PRIORITY_LABELS[task.priority] || task.priority} priority
+                    </p>
+                  </Link>
+                  <Badge tone={taskStatusTone(task.status)}>
+                    {TASK_STATUS_LABELS[task.status] || task.status}
+                  </Badge>
                 </li>
               ))}
             </ul>

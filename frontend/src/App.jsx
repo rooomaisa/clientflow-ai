@@ -5,9 +5,9 @@ import ClientDetailPage from './pages/ClientDetailPage'
 import ClientsPage from './pages/ClientsPage'
 import DashboardPage from './pages/DashboardPage'
 import MeetingDetailPage from './pages/MeetingDetailPage'
+import TasksPage from './pages/TasksPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
-import PlaceholderPage from './pages/PlaceholderPage'
 import RegisterPage from './pages/RegisterPage'
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/clients/:clientId" element={<ClientDetailPage />} />
           <Route path="/clients/:clientId/meetings/:meetingId" element={<MeetingDetailPage />} />
-          <Route path="/tasks" element={<PlaceholderPage title="Tasks" phase="14" />} />
+          <Route path="/tasks" element={<TasksPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
