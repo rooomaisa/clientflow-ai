@@ -142,8 +142,19 @@ No manual redeploy needed after the initial setup.
 | API requests fail / CORS error | Check `CORS_ORIGIN` on Render matches your Vercel URL exactly |
 | `openai: missing` on health check | Add `OPENAI_API_KEY` on Render and redeploy |
 | First request very slow | Render free tier waking from sleep — wait ~60s and retry |
+| Deploy fails: `max clients reached in session mode` | Supabase pool limit hit — stop local backend (`Ctrl+C`), wait 2 min, redeploy on Render |
 | 502 on AI processing | OpenAI key invalid or no billing — check Render logs |
 | Login works locally but not prod | `VITE_API_URL` missing or wrong on Vercel |
 
 **Render logs:** Render dashboard → your service → **Logs**  
 **Vercel logs:** Vercel dashboard → your project → **Deployments** → click latest → **Functions / Build Logs**
+
+### Supabase connection limit (important)
+
+Supabase Session pooler allows **15 connections** on the free tier. Spring Boot defaults to 10 connections per instance — so local dev + Render together can exceed that and crash the deploy.
+
+This project limits the pool to **3 connections** in `application.yml`. If deploy still fails:
+
+1. Stop your **local backend** (`Ctrl+C` in the backend terminal)
+2. Wait **2 minutes** for Supabase to release connections
+3. On Render → **Manual Deploy** → **Deploy latest commit**
