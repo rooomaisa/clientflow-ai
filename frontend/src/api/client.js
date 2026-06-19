@@ -5,9 +5,12 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('clientflow_token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  const isAuthRoute = config.url?.startsWith('/api/auth/')
+  if (!isAuthRoute) {
+    const token = localStorage.getItem('clientflow_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
   }
   return config
 })
