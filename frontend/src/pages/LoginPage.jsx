@@ -65,7 +65,7 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-slate-600">
         No account yet?{' '}
-        <Link to="/register" className="font-medium text-brand-600 hover:text-brand-700">
+        <Link to="/register" className="link-accent">
           Create one
         </Link>
       </p>

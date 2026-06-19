@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { CheckSquare, Plus } from 'lucide-react'
 import { fetchClients } from '../api/clients'
 import { createTask, deleteTask, fetchTasks, toTaskPayload, updateTask } from '../api/tasks'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
 import Input from '../components/ui/Input'
+import PageHeader from '../components/ui/PageHeader'
 import Select from '../components/ui/Select'
+import { SkeletonPageHeader, SkeletonTable } from '../components/ui/Skeleton'
 import Textarea from '../components/ui/Textarea'
+import { useToast } from '../components/ui/Toast'
 import {
   TASK_PRIORITIES,
   TASK_PRIORITY_LABELS,
@@ -30,6 +35,7 @@ const emptyForm = {
 }
 
 export default function TasksPage() {
+  const { toast } = useToast()
   const [tasks, setTasks] = useState([])
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
@@ -106,6 +112,7 @@ export default function TasksPage() {
       })
       setFormValues(emptyForm)
       setShowForm(false)
+      toast('Task created')
       await loadTasks()
     } catch (err) {
       setError(err.response?.data?.message || 'Could not create task.')
@@ -124,6 +131,7 @@ export default function TasksPage() {
         status: newStatus,
       })
       setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+      toast('Task status updated')
     } catch {
       setError('Could not update task status.')
     } finally {
@@ -138,33 +146,39 @@ export default function TasksPage() {
     try {
       await deleteTask(task.id)
       setTasks((current) => current.filter((item) => item.id !== task.id))
+      toast('Task deleted')
     } catch {
       setError('Could not delete task.')
     }
   }
 
   if (loading) {
-    return <p className="text-slate-600">Loading tasks...</p>
+    return (
+      <div className="space-y-8">
+        <SkeletonPageHeader />
+        <SkeletonTable rows={5} cols={6} />
+      </div>
+    )
   }
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-brand-600">Tasks</p>
-          <h1 className="mt-1 text-3xl font-bold text-slate-900">Your tasks</h1>
-          <p className="mt-2 text-slate-600">Track follow-ups from meetings and update progress as you go.</p>
-        </div>
-        <Button onClick={() => setShowForm((open) => !open)}>
+      <PageHeader
+        label="Tasks"
+        title="Your tasks"
+        description="Track follow-ups from meetings and update progress as you go."
+      >
+        <Button onClick={() => setShowForm((open) => !open)} className="gap-2">
+          <Plus className="h-4 w-4" />
           {showForm ? 'Close form' : 'Add task'}
         </Button>
-      </section>
+      </PageHeader>
 
       {error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
       )}
 
-      <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2">
+      <section className="card-accent grid gap-4 p-6 md:grid-cols-2">
         <Select
           id="statusFilter"
           label="Filter by status"
@@ -195,8 +209,8 @@ export default function TasksPage() {
       </section>
 
       {showForm && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">New task</h2>
+        <section className="card-accent p-6">
+          <h2 className="font-display text-lg font-semibold text-slate-900">New task</h2>
           <form onSubmit={handleCreate} className="mt-4 space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
               <Input
@@ -261,7 +275,7 @@ export default function TasksPage() {
 
             <div className="flex flex-wrap gap-3">
               <Button type="submit" disabled={submitting}>
-                {submitting ? 'Creating...' : 'Create task'}
+                {submitting ? 'Creating…' : 'Create task'}
               </Button>
               <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>
                 Cancel
@@ -271,42 +285,35 @@ export default function TasksPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <section className="card-accent overflow-hidden">
         {tasks.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-slate-600">No tasks match these filters.</p>
-            <p className="mt-2 text-sm text-slate-500">
-              Tasks appear here after AI processing or when you add one manually.
-            </p>
-          </div>
+          <EmptyState
+            icon={CheckSquare}
+            title="No tasks match these filters"
+            description="Tasks appear here after AI processing or when you add one manually."
+            actionLabel="Add task"
+            onAction={() => setShowForm(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+            <table className="min-w-full divide-y divide-slate-100">
+              <thead className="bg-slate-50/80">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Task
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Client
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Priority
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Due
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Actions
-                  </th>
+                  {['Task', 'Client', 'Priority', 'Status', 'Due', 'Actions'].map((header) => (
+                    <th
+                      key={header}
+                      className={`px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                        header === 'Actions' ? 'text-right' : 'text-left'
+                      }`}
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-50">
                 {tasks.map((task) => (
-                  <tr key={task.id} className="hover:bg-slate-50">
+                  <tr key={task.id} className="transition hover:bg-slate-50/80">
                     <td className="px-6 py-4">
                       <p className="font-medium text-slate-900">{task.title}</p>
                       {task.description && (
@@ -317,7 +324,7 @@ export default function TasksPage() {
                       {task.clientId ? (
                         <Link
                           to={`/clients/${task.clientId}`}
-                          className="font-medium text-brand-700 hover:text-brand-800"
+                          className="link-accent font-medium"
                         >
                           {clientNames[task.clientId] || `Client #${task.clientId}`}
                         </Link>
@@ -335,7 +342,7 @@ export default function TasksPage() {
                         value={task.status}
                         disabled={updatingTaskId === task.id}
                         onChange={(event) => handleStatusChange(task, event.target.value)}
-                        className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-brand-600 focus:border-brand-600 focus:ring-2"
+                        className="input-base !py-2"
                       >
                         {TASK_STATUSES.map((status) => (
                           <option key={status} value={status}>
@@ -346,7 +353,7 @@ export default function TasksPage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-600">{formatDate(task.dueDate)}</td>
                     <td className="px-6 py-4 text-right">
-                      <Button variant="secondary" onClick={() => handleDelete(task)}>
+                      <Button variant="secondary" size="sm" onClick={() => handleDelete(task)}>
                         Delete
                       </Button>
                     </td>

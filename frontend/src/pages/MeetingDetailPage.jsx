@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, Sparkles, Trash2 } from 'lucide-react'
 import { fetchClient } from '../api/clients'
 import { deleteMeeting, fetchMeeting, processMeetingWithAi, updateMeeting } from '../api/meetings'
 import AIAnalysisPanel from '../components/meetings/AIAnalysisPanel'
+import AIProcessingLoader from '../components/meetings/AIProcessingLoader'
 import MeetingForm from '../components/meetings/MeetingForm'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
+import { SkeletonPageHeader } from '../components/ui/Skeleton'
+import { useToast } from '../components/ui/Toast'
 
 function formatDate(value) {
   if (!value) return '—'
@@ -15,6 +19,7 @@ function formatDate(value) {
 export default function MeetingDetailPage() {
   const { clientId, meetingId } = useParams()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [client, setClient] = useState(null)
   const [meeting, setMeeting] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -47,15 +52,19 @@ export default function MeetingDetailPage() {
     const updated = await updateMeeting(meetingId, payload)
     setMeeting(updated)
     setEditing(false)
+    toast('Meeting updated')
   }
 
   async function handleDelete() {
-    const confirmed = window.confirm(`Delete "${meeting.title}"? This also removes AI analysis and related tasks.`)
+    const confirmed = window.confirm(
+      `Delete "${meeting.title}"? This also removes AI analysis and related tasks.`
+    )
     if (!confirmed) return
 
     setDeleting(true)
     try {
       await deleteMeeting(meetingId)
+      toast('Meeting deleted')
       navigate(`/clients/${clientId}`)
     } catch {
       setError('Could not delete this meeting.')
@@ -77,6 +86,7 @@ export default function MeetingDetailPage() {
     try {
       const analysis = await processMeetingWithAi(meetingId)
       setMeeting((current) => ({ ...current, aiAnalysis: analysis }))
+      toast('AI analysis complete')
     } catch (err) {
       setError(err.response?.data?.message || 'AI processing failed. Check your OpenAI key and try again.')
     } finally {
@@ -85,14 +95,23 @@ export default function MeetingDetailPage() {
   }
 
   if (loading) {
-    return <p className="text-slate-600">Loading meeting...</p>
+    return (
+      <div className="space-y-8">
+        <SkeletonPageHeader />
+        <div className="card h-48 animate-pulse" />
+      </div>
+    )
   }
 
   if (error && !meeting) {
     return (
       <div className="space-y-4">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
-        <Link to={`/clients/${clientId}`} className="text-sm font-medium text-brand-700 hover:text-brand-800">
+        <Link
+          to={`/clients/${clientId}`}
+          className="link-accent inline-flex items-center gap-1 text-sm"
+        >
+          <ArrowLeft className="h-4 w-4" />
           Back to client
         </Link>
       </div>
@@ -105,12 +124,13 @@ export default function MeetingDetailPage() {
         <div>
           <Link
             to={`/clients/${clientId}`}
-            className="text-sm font-medium text-brand-700 hover:text-brand-800"
+            className="link-accent inline-flex items-center gap-1 text-sm"
           >
-            ← Back to {client?.name || 'client'}
+            <ArrowLeft className="h-4 w-4" />
+            Back to {client?.name || 'client'}
           </Link>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold text-slate-900">{meeting.title}</h1>
+            <h1 className="page-header-title">{meeting.title}</h1>
             {meeting.aiAnalysis ? (
               <Badge tone="emerald">AI processed</Badge>
             ) : (
@@ -128,11 +148,22 @@ export default function MeetingDetailPage() {
               Edit meeting
             </Button>
           )}
-          <Button onClick={handleProcessAi} disabled={processing}>
-            {processing ? 'Processing with AI...' : meeting.aiAnalysis ? 'Re-process with AI' : 'Process with AI'}
+          <Button
+            variant={meeting.aiAnalysis ? 'primary' : 'ai'}
+            onClick={handleProcessAi}
+            disabled={processing}
+            className="gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            {processing
+              ? 'Processing…'
+              : meeting.aiAnalysis
+                ? 'Re-process with AI'
+                : 'Process with AI'}
           </Button>
-          <Button variant="secondary" onClick={handleDelete} disabled={deleting}>
-            {deleting ? 'Deleting...' : 'Delete meeting'}
+          <Button variant="secondary" onClick={handleDelete} disabled={deleting} className="gap-2">
+            <Trash2 className="h-4 w-4" />
+            {deleting ? 'Deleting…' : 'Delete'}
           </Button>
         </div>
       </section>
@@ -141,8 +172,10 @@ export default function MeetingDetailPage() {
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">Meeting notes</h2>
+      {processing && <AIProcessingLoader />}
+
+      <section className="card-accent p-6">
+        <h2 className="font-display text-lg font-semibold text-slate-900">Meeting notes</h2>
 
         {editing ? (
           <div className="mt-4">
@@ -154,14 +187,14 @@ export default function MeetingDetailPage() {
             />
           </div>
         ) : (
-          <pre className="mt-4 whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700">
+          <pre className="mt-4 whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50/80 p-4 text-sm leading-relaxed text-slate-700">
             {meeting.rawNotes}
           </pre>
         )}
       </section>
 
-      {meeting.aiAnalysis && (
-        <section className="rounded-2xl border border-emerald-200 bg-white p-6 shadow-sm">
+      {meeting.aiAnalysis && !processing && (
+        <section className="card-accent border-violet-200/60 bg-gradient-to-br from-violet-50/30 to-white p-6 shadow-glow">
           <AIAnalysisPanel analysis={meeting.aiAnalysis} />
         </section>
       )}

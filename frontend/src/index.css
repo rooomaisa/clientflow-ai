@@ -4,6 +4,200 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-surface-muted text-slate-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-violet-100 text-violet-900;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card;
+  }
+
+  .card-interactive {
+    @apply card transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-card-hover;
+  }
+
+  .card-accent {
+    @apply card-interactive relative overflow-hidden;
+  }
+
+  .card-accent::before {
+    content: '';
+    @apply absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-accent-gradient transition duration-300;
+  }
+
+  .card-accent:hover::before {
+    @apply scale-x-100;
+  }
+
+  .app-bg {
+    @apply bg-slate-50 text-slate-900;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(139 92 246 / 0.05), transparent),
+      radial-gradient(ellipse 60% 40% at 90% 10%, rgb(249 115 22 / 0.04), transparent),
+      radial-gradient(ellipse 50% 30% at 10% 20%, rgb(139 92 246 / 0.03), transparent);
+  }
+
+  .link-accent {
+    @apply font-medium text-violet-700 transition hover:text-violet-800;
+  }
+
+  .app-icon-purple {
+    @apply flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-100;
+  }
+
+  .app-icon-orange {
+    @apply flex items-center justify-center rounded-xl bg-orange-50 text-orange-600 ring-1 ring-orange-100;
+  }
+
+  .app-list-item {
+    @apply rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3 transition hover:border-violet-200/80 hover:bg-white hover:shadow-sm;
+  }
+
+  .page-header-label {
+    @apply text-sm font-semibold uppercase tracking-wide text-violet-600;
+  }
+
+  .page-header-title {
+    @apply font-display text-3xl font-bold tracking-tight text-slate-900;
+  }
+
+  .input-base {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-violet-600 via-violet-500 to-orange-500 bg-clip-text text-transparent;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-slate-200/80;
+  }
+
+  .glass-nav {
+    @apply border-b border-slate-200/80 bg-white/80 backdrop-blur-xl;
+  }
+
+  /* Landing — light, business-modern, violet + orange */
+  .landing-bg {
+    @apply bg-slate-50 text-slate-900;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(139 92 246 / 0.07), transparent),
+      radial-gradient(ellipse 60% 40% at 90% 10%, rgb(249 115 22 / 0.05), transparent),
+      radial-gradient(ellipse 50% 30% at 10% 20%, rgb(139 92 246 / 0.04), transparent);
+  }
+
+  .accent-gradient-text {
+    @apply bg-accent-text bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-shift;
+  }
+
+  .landing-card {
+    @apply rounded-2xl border border-slate-200/90 bg-white shadow-card transition duration-300;
+  }
+
+  .landing-card-hover {
+    @apply landing-card hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-card-hover;
+  }
+
+  .landing-card-accent {
+    @apply landing-card-hover relative overflow-hidden;
+  }
+
+  .landing-card-accent::before {
+    content: '';
+    @apply absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-accent-gradient transition duration-300;
+  }
+
+  .landing-card-accent:hover::before {
+    @apply scale-x-100;
+  }
+
+  .landing-card-accent-purple:hover {
+    @apply border-violet-200 shadow-[0_8px_30px_-12px_rgb(139_92_246/0.35)];
+  }
+
+  .landing-card-accent-orange:hover {
+    @apply border-orange-200 shadow-[0_8px_30px_-12px_rgb(249_115_22/0.3)];
+  }
+
+  .landing-bento-panel {
+    @apply landing-card relative text-left transition-all duration-500;
+  }
+
+  .landing-bento-panel.is-active-violet {
+    @apply -translate-y-0.5 border-violet-300 bg-gradient-to-br from-violet-50/90 to-white shadow-[0_8px_32px_-8px_rgb(139_92_246/0.35)] ring-1 ring-violet-200/80;
+  }
+
+  .landing-bento-panel.is-active-orange {
+    @apply -translate-y-0.5 border-orange-300 bg-gradient-to-br from-orange-50/80 to-white shadow-[0_8px_32px_-8px_rgb(249_115_22/0.3)] ring-1 ring-orange-200/80;
+  }
+
+  .landing-bento-panel.is-done-violet {
+    @apply border-violet-200/80 bg-violet-50/40 shadow-[0_4px_20px_-8px_rgb(139_92_246/0.2)];
+  }
+
+  .landing-bento-panel.is-done-orange {
+    @apply border-orange-200/80 bg-orange-50/35 shadow-[0_4px_20px_-8px_rgb(249_115_22/0.18)];
+  }
+
+  .landing-section-features {
+    background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgb(139 92 246 / 0.06), transparent);
+  }
+
+  .landing-section-workflow {
+    background-image:
+      radial-gradient(ellipse 60% 50% at 0% 50%, rgb(249 115 22 / 0.05), transparent),
+      radial-gradient(ellipse 50% 40% at 100% 80%, rgb(139 92 246 / 0.05), transparent);
+  }
+
+  .landing-section-cta {
+    background-image: radial-gradient(ellipse 70% 60% at 50% 100%, rgb(139 92 246 / 0.07), transparent);
+  }
+
+  .landing-cta-card {
+    @apply overflow-hidden rounded-3xl border border-slate-200/90 bg-white px-8 py-16 text-center shadow-card-hover;
+    background-image: linear-gradient(180deg, rgb(139 92 246 / 0.04) 0%, transparent 40%);
+  }
+
+  .landing-btn {
+    @apply inline-flex items-center justify-center rounded-xl bg-accent-gradient px-6 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:opacity-95 hover:shadow-md;
+  }
+
+  .landing-btn-outline {
+    @apply inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition duration-200 hover:border-slate-400 hover:bg-slate-50;
+  }
+
+  .landing-pill {
+    @apply rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm font-medium text-slate-600 shadow-sm;
+  }
+
+  .landing-icon-purple {
+    @apply flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-100;
+  }
+
+  .landing-icon-orange {
+    @apply flex items-center justify-center rounded-xl bg-orange-50 text-orange-600 ring-1 ring-orange-100;
+  }
+}
+
+@layer utilities {
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
   }
 }
