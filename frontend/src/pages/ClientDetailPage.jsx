@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, Calendar, Sparkles, Trash2 } from 'lucide-react'
 import { deleteClient, fetchClient, updateClient } from '../api/clients'
 import { createMeeting, fetchMeetingsForClient } from '../api/meetings'
 import ClientForm from '../components/clients/ClientForm'
 import MeetingForm from '../components/meetings/MeetingForm'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import { SkeletonPageHeader, SkeletonList } from '../components/ui/Skeleton'
+import { useToast } from '../components/ui/Toast'
 import { CLIENT_STATUS_LABELS, clientStatusTone } from '../utils/clientStatus'
 
 function formatDate(value) {
@@ -16,6 +20,7 @@ function formatDate(value) {
 export default function ClientDetailPage() {
   const { clientId } = useParams()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [client, setClient] = useState(null)
   const [meetings, setMeetings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -48,21 +53,26 @@ export default function ClientDetailPage() {
     const updated = await updateClient(clientId, payload)
     setClient(updated)
     setEditing(false)
+    toast('Client updated')
   }
 
   async function handleCreateMeeting(payload) {
     const created = await createMeeting(clientId, payload)
     setShowMeetingForm(false)
+    toast('Meeting created')
     navigate(`/clients/${clientId}/meetings/${created.id}`)
   }
 
   async function handleDelete() {
-    const confirmed = window.confirm(`Delete ${client.name}? This also removes their meetings and related tasks.`)
+    const confirmed = window.confirm(
+      `Delete ${client.name}? This also removes their meetings and related tasks.`
+    )
     if (!confirmed) return
 
     setDeleting(true)
     try {
       await deleteClient(clientId)
+      toast('Client deleted')
       navigate('/clients')
     } catch {
       setError('Could not delete this client.')
@@ -71,14 +81,25 @@ export default function ClientDetailPage() {
   }
 
   if (loading) {
-    return <p className="text-slate-600">Loading client...</p>
+    return (
+      <div className="space-y-8">
+        <SkeletonPageHeader />
+        <div className="card p-6">
+          <SkeletonList rows={3} />
+        </div>
+      </div>
+    )
   }
 
   if (error && !client) {
     return (
       <div className="space-y-4">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
-        <Link to="/clients" className="text-sm font-medium text-brand-700 hover:text-brand-800">
+        <Link
+          to="/clients"
+          className="link-accent inline-flex items-center gap-1 text-sm"
+        >
+          <ArrowLeft className="h-4 w-4" />
           Back to clients
         </Link>
       </div>
@@ -89,11 +110,15 @@ export default function ClientDetailPage() {
     <div className="space-y-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Link to="/clients" className="text-sm font-medium text-brand-700 hover:text-brand-800">
-            ← Back to clients
+          <Link
+            to="/clients"
+            className="link-accent inline-flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to clients
           </Link>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold text-slate-900">{client.name}</h1>
+            <h1 className="page-header-title">{client.name}</h1>
             <Badge tone={clientStatusTone(client.status)}>
               {CLIENT_STATUS_LABELS[client.status] || client.status}
             </Badge>
@@ -107,8 +132,9 @@ export default function ClientDetailPage() {
               Edit client
             </Button>
           )}
-          <Button variant="secondary" onClick={handleDelete} disabled={deleting}>
-            {deleting ? 'Deleting...' : 'Delete client'}
+          <Button variant="secondary" onClick={handleDelete} disabled={deleting} className="gap-2">
+            <Trash2 className="h-4 w-4" />
+            {deleting ? 'Deleting…' : 'Delete client'}
           </Button>
         </div>
       </section>
@@ -117,8 +143,8 @@ export default function ClientDetailPage() {
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">Client details</h2>
+      <section className="card-accent p-6">
+        <h2 className="font-display text-lg font-semibold text-slate-900">Client details</h2>
 
         {editing ? (
           <div className="mt-4">
@@ -155,17 +181,20 @@ export default function ClientDetailPage() {
         )}
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="card-accent p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Meeting notes</h2>
-            <p className="mt-1 text-sm text-slate-500">Add notes, then process them with AI to get summaries and tasks.</p>
+            <h2 className="font-display text-lg font-semibold text-slate-900">Meeting notes</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Add notes, then process them with AI to get summaries and tasks.
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
               {meetings.length} total
             </span>
-            <Button onClick={() => setShowMeetingForm((open) => !open)}>
+            <Button onClick={() => setShowMeetingForm((open) => !open)} className="gap-2">
+              <Calendar className="h-4 w-4" />
               {showMeetingForm ? 'Close form' : 'Add meeting'}
             </Button>
           </div>
@@ -182,16 +211,22 @@ export default function ClientDetailPage() {
         )}
 
         {meetings.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-500">No meeting notes yet for this client.</p>
+          <EmptyState
+            icon={Sparkles}
+            title="No meeting notes yet"
+            description="Add meeting notes for this client, then process them with AI."
+            actionLabel="Add meeting"
+            onAction={() => setShowMeetingForm(true)}
+          />
         ) : (
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-4 space-y-2">
             {meetings.map((meeting) => (
               <li
                 key={meeting.id}
-                className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+                className="app-list-item flex items-center justify-between"
               >
                 <Link to={`/clients/${clientId}/meetings/${meeting.id}`} className="min-w-0 flex-1">
-                  <p className="font-medium text-slate-900 hover:text-brand-700">{meeting.title}</p>
+                  <p className="font-medium text-slate-900 hover:text-violet-700">{meeting.title}</p>
                   <p className="text-sm text-slate-500">
                     {meeting.meetingDate ? formatDate(meeting.meetingDate) : 'No date set'}
                   </p>

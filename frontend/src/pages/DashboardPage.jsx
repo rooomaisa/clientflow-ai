@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Brain, CheckSquare, UserPlus, Users } from 'lucide-react'
 import { fetchDashboardOverview } from '../api/dashboard'
 import Badge from '../components/ui/Badge'
+import EmptyState from '../components/ui/EmptyState'
+import PageHeader from '../components/ui/PageHeader'
+import { SkeletonList, SkeletonPageHeader, SkeletonStatCards } from '../components/ui/Skeleton'
 import StatCard from '../components/ui/StatCard'
 import { useAuth } from '../context/AuthContext'
 import { CLIENT_STATUS_LABELS, clientStatusTone } from '../utils/clientStatus'
@@ -29,7 +33,20 @@ export default function DashboardPage() {
   }, [])
 
   if (loading) {
-    return <p className="text-slate-600">Loading dashboard...</p>
+    return (
+      <div className="space-y-8">
+        <SkeletonPageHeader />
+        <SkeletonStatCards />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="card p-6">
+            <SkeletonList rows={3} />
+          </div>
+          <div className="card p-6">
+            <SkeletonList rows={3} />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (error) {
@@ -42,33 +59,44 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section>
-        <p className="text-sm font-medium text-brand-600">Dashboard</p>
-        <h1 className="mt-1 text-3xl font-bold text-slate-900">Welcome back, {user?.name}</h1>
-        <p className="mt-2 text-slate-600">Here is a quick overview of your client workflow.</p>
-      </section>
+      <PageHeader
+        label="Dashboard"
+        title={`Welcome back, ${user?.name?.split(' ')[0] || user?.name}`}
+        description="Here is a quick overview of your client workflow."
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total clients" value={stats.totalClients} />
-        <StatCard label="Active clients" value={stats.activeClients} />
-        <StatCard label="Open tasks" value={stats.openTasks} />
-        <StatCard label="Meetings processed with AI" value={stats.aiProcessedCount} />
+        <StatCard label="Total clients" value={stats.totalClients} icon={Users} accent="violet" />
+        <StatCard label="Active clients" value={stats.activeClients} icon={UserPlus} accent="orange" />
+        <StatCard label="Open tasks" value={stats.openTasks} icon={CheckSquare} accent="violet" />
+        <StatCard
+          label="Meetings processed with AI"
+          value={stats.aiProcessedCount}
+          icon={Brain}
+          accent="orange"
+        />
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Recent clients</h2>
+        <article className="card-accent p-6">
+          <h2 className="font-display text-lg font-semibold text-slate-900">Recent clients</h2>
           {recentClients.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">No clients yet. Add your first client in Phase 12.</p>
+            <EmptyState
+              icon={Users}
+              title="No clients yet"
+              description="Add your first client to start tracking meetings and tasks."
+              actionLabel="Add client"
+              actionTo="/clients"
+            />
           ) : (
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-4 space-y-2">
               {recentClients.map((client) => (
                 <li
                   key={client.id}
-                  className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+                  className="app-list-item flex items-center justify-between"
                 >
                   <Link to={`/clients/${client.id}`} className="min-w-0 flex-1">
-                    <p className="font-medium text-slate-900 hover:text-brand-700">{client.name}</p>
+                    <p className="font-medium text-slate-900 hover:text-violet-700">{client.name}</p>
                     <p className="text-sm text-slate-500">{client.companyName || 'No company'}</p>
                   </Link>
                   <Badge tone={clientStatusTone(client.status)}>
@@ -80,19 +108,25 @@ export default function DashboardPage() {
           )}
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Recent tasks</h2>
+        <article className="card-accent p-6">
+          <h2 className="font-display text-lg font-semibold text-slate-900">Recent tasks</h2>
           {recentTasks.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">No tasks yet. They will appear after AI processing or manual creation.</p>
+            <EmptyState
+              icon={CheckSquare}
+              title="No tasks yet"
+              description="Tasks appear here after AI processing or when you add one manually."
+              actionLabel="View tasks"
+              actionTo="/tasks"
+            />
           ) : (
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-4 space-y-2">
               {recentTasks.map((task) => (
                 <li
                   key={task.id}
-                  className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3"
+                  className="app-list-item flex items-center justify-between"
                 >
                   <Link to="/tasks" className="min-w-0 flex-1">
-                    <p className="font-medium text-slate-900 hover:text-brand-700">{task.title}</p>
+                    <p className="font-medium text-slate-900 hover:text-violet-700">{task.title}</p>
                     <p className="text-sm text-slate-500">
                       {TASK_PRIORITY_LABELS[task.priority] || task.priority} priority
                     </p>

@@ -12,7 +12,7 @@ ClientFlow AI helps you manage clients, meeting notes, and follow-up tasks. Afte
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React, Vite, JavaScript, Tailwind CSS |
+| Frontend | React, Vite, JavaScript, Tailwind CSS, Lucide icons, Framer Motion |
 | Backend | Java 21, Spring Boot, Spring Security, JWT |
 | Database | PostgreSQL (Supabase) |
 | AI | OpenAI API |
@@ -97,11 +97,23 @@ _Add your Vercel URL here after deploying._
 
 ## Screenshots
 
-_Coming in Phase 16._
+The UI includes a polished landing page with product mockup, dashboard with stat cards and skeleton loaders, and an animated AI processing flow on meeting notes.
+
+**Key screens to capture for your README:**
+1. Landing page hero with dashboard mockup
+2. Dashboard overview with stats
+3. Meeting detail → "Process with AI" loading state
+4. AI analysis panel with summary, action items, and email draft
+
+_Tip: Use a screen recorder (macOS Screenshot, LICEcap, or CleanShot) to create a short GIF of the AI flow — great for GitHub._
 
 ## What I learned
 
-_Coming in Phase 16._
+- Design tokens and reusable Tailwind component classes (`.card`, `.input-base`, gradient utilities)
+- Loading UX patterns: skeleton screens vs spinners
+- Micro-interactions with CSS animations and Framer Motion staggered reveals
+- Toast notifications for user feedback on CRUD actions
+- Building a cohesive visual system across marketing and app pages
 
 ## Future improvements
 

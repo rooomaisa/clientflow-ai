@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { UserPlus, Users } from 'lucide-react'
 import { createClient, fetchClients } from '../api/clients'
 import ClientForm from '../components/clients/ClientForm'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import PageHeader from '../components/ui/PageHeader'
+import { SkeletonPageHeader, SkeletonTable } from '../components/ui/Skeleton'
+import { useToast } from '../components/ui/Toast'
 import { CLIENT_STATUS_LABELS, clientStatusTone } from '../utils/clientStatus'
 
 export default function ClientsPage() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -31,34 +37,40 @@ export default function ClientsPage() {
 
   async function handleCreate(payload) {
     const created = await createClient(payload)
+    toast('Client created successfully')
     setShowForm(false)
     navigate(`/clients/${created.id}`)
   }
 
   if (loading) {
-    return <p className="text-slate-600">Loading clients...</p>
+    return (
+      <div className="space-y-8">
+        <SkeletonPageHeader />
+        <SkeletonTable rows={5} cols={4} />
+      </div>
+    )
   }
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-brand-600">Clients</p>
-          <h1 className="mt-1 text-3xl font-bold text-slate-900">Your clients</h1>
-          <p className="mt-2 text-slate-600">Manage client intake details and track their status.</p>
-        </div>
-        <Button onClick={() => setShowForm((open) => !open)}>
+      <PageHeader
+        label="Clients"
+        title="Your clients"
+        description="Manage client intake details and track their status."
+      >
+        <Button onClick={() => setShowForm((open) => !open)} className="gap-2">
+          <UserPlus className="h-4 w-4" />
           {showForm ? 'Close form' : 'Add client'}
         </Button>
-      </section>
+      </PageHeader>
 
       {error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
       )}
 
       {showForm && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">New client</h2>
+        <section className="card-accent p-6">
+          <h2 className="font-display text-lg font-semibold text-slate-900">New client</h2>
           <div className="mt-4">
             <ClientForm
               submitLabel="Create client"
@@ -69,38 +81,37 @@ export default function ClientsPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <section className="card-accent overflow-hidden">
         {clients.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-slate-600">No clients yet.</p>
-            <p className="mt-2 text-sm text-slate-500">Add your first client to start tracking meetings and tasks.</p>
-          </div>
+          <EmptyState
+            icon={Users}
+            title="No clients yet"
+            description="Add your first client to start tracking meetings and tasks."
+            actionLabel="Add client"
+            onAction={() => setShowForm(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+            <table className="min-w-full divide-y divide-slate-100">
+              <thead className="bg-slate-50/80">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Client
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Company
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Status
-                  </th>
+                  {['Client', 'Company', 'Email', 'Status'].map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-50">
                 {clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-slate-50">
+                  <tr key={client.id} className="transition hover:bg-slate-50/80">
                     <td className="px-6 py-4">
                       <Link
                         to={`/clients/${client.id}`}
-                        className="font-medium text-brand-700 hover:text-brand-800"
+                        className="link-accent font-medium"
                       >
                         {client.name}
                       </Link>

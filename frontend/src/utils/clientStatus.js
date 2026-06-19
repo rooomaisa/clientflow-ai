@@ -17,7 +17,7 @@ export const CLIENT_STATUS_LABELS = {
 export function clientStatusTone(status) {
   const tones = {
     NEW: 'blue',
-    ACTIVE: 'emerald',
+    ACTIVE: 'violet',
     WAITING_FOR_REPLY: 'amber',
     COMPLETED: 'slate',
     ARCHIVED: 'slate',
