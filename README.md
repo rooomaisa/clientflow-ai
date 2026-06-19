@@ -62,7 +62,20 @@ flowchart LR
 
 > **Note:** The backend runs on Render's free tier and sleeps after ~15 minutes of inactivity. The first request after sleep can take **30–60 seconds** to wake up. Refresh once if login or AI processing seems slow.
 
-_Demo account and walkthrough coming in a future update._
+### Try it — demo account
+
+| | |
+|---|---|
+| **Email** | `demo@clientflow.ai` |
+| **Password** | `DemoClientFlow2025!` |
+
+**What you'll see:**
+1. Log in → dashboard with stats (1 client, open tasks, AI analyses)
+2. **Clients** → **Acme Consulting** → meeting **Q1 Strategy Kickoff** (already AI-processed)
+3. Meeting **Discovery Call — Try AI** → click **Process with AI** to try the flow yourself
+4. **Tasks** → action items from the processed meeting
+
+No sign-up required — built for portfolio reviewers.
 
 ## User stories
 
@@ -93,9 +106,15 @@ _Demo account and walkthrough coming in a future update._
 
 ## Screenshots
 
-_Screenshots and a short demo GIF coming soon._
+| Landing page | Dashboard |
+|:---:|:---:|
+| ![Landing page](docs/screenshots/landing.png) | ![Dashboard](docs/screenshots/dashboard.png) |
 
-Key screens: landing page, dashboard, AI processing loader, analysis panel with summary and email draft.
+| AI processing | AI analysis panel |
+|:---:|:---:|
+| ![AI processing loader](docs/screenshots/ai-loader.png) | ![AI analysis results](docs/screenshots/ai-results.png) |
+
+_Demo GIF: add `docs/demo-flow.gif` after recording a 30–60 sec walkthrough (login → Process with AI → results)._
 
 ## Running locally
 
@@ -128,7 +147,6 @@ clientflow-ai/
 
 ## Future improvements
 
-- Demo account with seed data for zero-friction reviewer access
 - Database migrations with Flyway
 - Send follow-up emails directly from the app
 - Streaming AI responses
