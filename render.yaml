@@ -21,3 +21,5 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-4o-mini
+      - key: DEMO_SEED_ENABLED
+        value: "true"
