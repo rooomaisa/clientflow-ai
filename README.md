@@ -4,6 +4,8 @@ AI-powered client intake and meeting assistant for freelancers, consultants, and
 
 Turn messy meeting notes into summaries, action items, follow-up tasks, and professional email drafts.
 
+**Live demo:** [clientflow-ai-xi.vercel.app](https://clientflow-ai-xi.vercel.app)
+
 ## What it does
 
 ClientFlow AI helps you manage clients, meeting notes, and follow-up tasks. After a client conversation, paste your raw notes, click **Process with AI**, and get structured output you can act on.
@@ -93,7 +95,11 @@ Quick summary:
 
 ## Live demo
 
-_Add your Vercel URL here after deploying._
+**App:** [https://clientflow-ai-xi.vercel.app](https://clientflow-ai-xi.vercel.app)
+
+**API health:** [https://clientflow-api-3kgj.onrender.com/api/health](https://clientflow-api-3kgj.onrender.com/api/health)
+
+> **Note:** The backend runs on Render's free tier and sleeps after ~15 minutes of inactivity. The first request after sleep can take **30–60 seconds** to wake up — normal for portfolio hosting. Refresh once if login or AI processing seems slow.
 
 ## Screenshots
 
