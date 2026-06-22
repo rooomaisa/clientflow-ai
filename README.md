@@ -114,7 +114,9 @@ No sign-up required — built for portfolio reviewers.
 |:---:|:---:|
 | ![AI processing loader](docs/screenshots/ai-loader.png) | ![AI analysis results](docs/screenshots/ai-results.png) |
 
-_Demo GIF: add `docs/demo-flow.gif` after recording a 30–60 sec walkthrough (login → Process with AI → results)._
+### Demo flow
+
+![Demo flow — login, Process with AI, and results](docs/demo-flow.gif)
 
 ## Running locally
 
