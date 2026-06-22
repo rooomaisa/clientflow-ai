@@ -1,5 +1,7 @@
 # ClientFlow AI
 
+![CI](https://github.com/rooomaisa/clientflow-ai/actions/workflows/ci.yml/badge.svg)
+
 **Full-stack AI workflow app for freelancers** — turn messy meeting notes into summaries, action items, tasks, and follow-up email drafts.
 
 **Live demo:** [clientflow-ai-xi.vercel.app](https://clientflow-ai-xi.vercel.app)
